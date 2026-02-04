@@ -12,8 +12,13 @@ const EFFECTS = {
     },
     kmeans: {
         shader: kmeansShader,
-        getUniforms: (settings: any) =>
-            new Int32Array([settings.numColors, 0, 0, 0]),
+        getUniforms: (settings: any) => {
+            const buffer = new ArrayBuffer(16);
+            const view = new DataView(buffer);
+            view.setInt32(0, settings.numColors, true);
+            view.setFloat32(4, settings.kmeansMix, true);
+            return new Uint8Array(buffer);
+        },
     },
 } as const;
 
@@ -58,9 +63,7 @@ export function useWebGPU() {
                 device,
                 format: canvasFormat,
                 alphaMode: "premultiplied",
-                usage:
-                    GPUTextureUsage.RENDER_ATTACHMENT |
-                    GPUTextureUsage.COPY_DST,
+                usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_DST,
             });
 
             // Create sampler
@@ -167,7 +170,10 @@ export function useWebGPU() {
             if (settingsState.enableKMeans) {
                 activeEffects.push({
                     name: "kmeans",
-                    settings: { numColors: settingsState.numColors },
+                    settings: {
+                        numColors: settingsState.numColors,
+                        kmeansMix: settingsState.kmeansMix,
+                    },
                 });
             }
 
@@ -259,6 +265,7 @@ export function useWebGPU() {
             settingsState.blurRadius,
             settingsState.enableKMeans,
             settingsState.numColors,
+            settingsState.kmeansMix,
         ],
         () => {
             render();

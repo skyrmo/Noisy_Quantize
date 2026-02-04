@@ -5,9 +5,9 @@ struct VertexOutput {
 
 struct KMeansSettings {
     numColors: i32,
+    mixAmount: f32,
     _pad1: i32,
     _pad2: i32,
-    _pad3: i32,
 }
 
 @group(0) @binding(0) var textureSampler: sampler;
@@ -161,8 +161,8 @@ fn initializeCentroidsProper(samples: array<vec3f, 64>, numSamples: i32, numCent
 
 // Perform K-means clustering
 fn performKMeans(samples: array<vec3f, 64>, numSamples: i32, numCentroids: i32, texCoord: vec2f) -> array<vec3f, 16> {
-    var centroids = initializeCentroids(samples, numSamples, numCentroids, texCoord);
-    // var centroids = initializeCentroidsProper(samples, numSamples, numCentroids, texCoord);
+    // var centroids = initializeCentroids(samples, numSamples, numCentroids, texCoord);
+    var centroids = initializeCentroidsProper(samples, numSamples, numCentroids, texCoord);
 
     // Perform iterative refinement
     let maxIterations = 12;
@@ -237,5 +237,8 @@ fn fragmentMain(@location(0) texCoord: vec2f) -> @location(0) vec4f {
     // Find the nearest centroid to the original color
     let quantizedColor = findNearestCentroid(originalColor, centroids, settings.numColors);
 
-    return vec4f(quantizedColor, 1.0);
+    // Blend between original and quantized based on mix amount
+    let finalColor = mix(originalColor, quantizedColor, settings.mixAmount);
+
+    return vec4f(finalColor, 1.0);
 }

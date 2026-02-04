@@ -4,6 +4,7 @@ import { reactive } from "vue";
 export interface SettingsState {
     enableKMeans: boolean;
     numColors: number;
+    kmeansMix: number;
     enableBlur: boolean;
     blurRadius: number;
 }
@@ -21,6 +22,7 @@ export interface ImageState {
 const settingsState = reactive<SettingsState>({
     enableKMeans: false,
     numColors: 8,
+    kmeansMix: 1.0,
     enableBlur: false,
     blurRadius: 2.0,
 });

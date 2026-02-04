@@ -36,6 +36,18 @@
                 v-model.number="settingsState.numColors"
             />
         </div>
+        <div class="setting-group" v-if="settingsState.enableKMeans">
+            <label for="kmeans-mix">Effect Mix:</label>
+            <input
+                id="kmeans-mix"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                v-model.number="settingsState.kmeansMix"
+            />
+            <span>{{ Math.round(settingsState.kmeansMix * 100) }}%</span>
+        </div>
 
         <div class="setting-group">
             <label class="checkbox-label">
